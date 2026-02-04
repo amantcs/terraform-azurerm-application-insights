@@ -4,6 +4,8 @@ This module creates an Azure Application Insights component.
 
 ## Usage
 
+### Basic Usage
+
 ```hcl
 module "application_insights" {
   source = "./modules/application-insights"
@@ -12,6 +14,31 @@ module "application_insights" {
   location            = "West Europe"
   resource_group_name = "example-resources"
   workspace_id        = "/subscriptions/.../resourceGroups/.../providers/Microsoft.OperationalInsights/workspaces/..."
+  application_type    = "web"
+
+  tags = {
+    Environment = "Development"
+  }
+}
+```
+
+### Using an Existing Log Analytics Workspace
+
+You can use a `data` block to fetch an existing Log Analytics Workspace and pass its ID to the module:
+
+```hcl
+data "azurerm_log_analytics_workspace" "existing" {
+  name                = "existing-workspace"
+  resource_group_name = "existing-rg"
+}
+
+module "application_insights" {
+  source = "./modules/application-insights"
+
+  name                = "example-appinsights"
+  location            = "West Europe"
+  resource_group_name = "example-resources"
+  workspace_id        = data.azurerm_log_analytics_workspace.existing.id
   application_type    = "web"
 
   tags = {
